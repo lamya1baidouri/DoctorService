@@ -1,5 +1,8 @@
 package com.service.service.Interfaces;
 
+import com.service.service.model.Doctor;
+import com.service.service.model.DoctorRequestDTO;
+
 public interface DoctorService {
 
 
@@ -12,4 +15,5 @@ public interface DoctorService {
     void sendMessageToPatient(String patientId, String message);
 
     void processNotifications();
+    Doctor createDoctor(DoctorRequestDTO doctorRequestDTO);
 }

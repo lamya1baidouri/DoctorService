@@ -3,6 +3,7 @@ package com.service.service.service;
 
 import com.service.service.Interfaces.DoctorService;
 import com.service.service.model.Doctor;
+import com.service.service.model.DoctorRequestDTO;
 import com.service.service.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,8 +52,21 @@ public class DoctorServiceImpl implements DoctorService {
         commServiceClient.sendMessageToPatient(patientId, message);
     }
 
+
     @Override
     public void processNotifications() {
         commServiceClient.subscribeToNotifications();
     }
+
+    @Override
+    public Doctor createDoctor(DoctorRequestDTO doctorRequestDTO) {
+        Doctor doctor = new Doctor();
+        doctor.setName(doctorRequestDTO.getUsername());
+        doctor.setPatientIds(doctorRequestDTO.getPatientIds());
+        doctor.setNurseIds(doctorRequestDTO.getNurseIds());
+
+
+        return doctorRepository.save(doctor);
+    }
+
 }

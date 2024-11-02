@@ -1,6 +1,8 @@
 package com.service.service.controller;
 
 import com.service.service.Interfaces.DoctorService;
+import com.service.service.model.Doctor;
+import com.service.service.model.DoctorRequestDTO;
 import com.service.service.model.MessageRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,8 +21,30 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Doctor Management", description = "Gestion des opérations liées aux médecins")
 public class DoctorController {
 
+
+
     @Autowired
     private DoctorService doctorService;
+
+    /**
+     * Créer un nouveau médecin.
+     *
+     * @param doctorRequestDTO Détails du médecin à créer.
+     * @return ResponseEntity avec le médecin créé et le statut HTTP approprié.
+     */
+    @Operation(summary = "Create a new doctor", description = "Permet de créer un nouveau médecin en fournissant les détails nécessaires.")
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") // Par exemple, seule une personne avec le rôle ADMIN peut créer un médecin
+    public ResponseEntity<Doctor> createDoctor(
+            @Parameter(description = "Détails du médecin à créer") @RequestBody DoctorRequestDTO doctorRequestDTO) {
+        try {
+            Doctor createdDoctor = doctorService.createDoctor(doctorRequestDTO);
+            return new ResponseEntity<>(createdDoctor, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     /**
      * Transférer un patient à un autre médecin.

@@ -3,6 +3,7 @@ package com.service.service.service;
 import com.service.service.model.Doctor;
 
 
+import com.service.service.model.DoctorRequestDTO;
 import com.service.service.repository.DoctorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -141,5 +142,52 @@ public class DoctorServiceImplTest {
         });
 
         assertEquals("Médecin non trouvé", exception.getMessage());
+    }
+    @Test
+    public void testCreateDoctor_Success() {
+
+        DoctorRequestDTO doctorRequestDTO = new DoctorRequestDTO();
+        doctorRequestDTO.setUsername("Dr. Marie Curie");
+        doctorRequestDTO.setPhoneNumber("0987654321");
+        doctorRequestDTO.setHospital("Hôpital Sainte-Marie");
+        doctorRequestDTO.setEmail("marie.curie@example.com");
+        doctorRequestDTO.setPassword("securepassword");
+        doctorRequestDTO.setPatientIds(Arrays.asList("patient1", "patient2"));
+        doctorRequestDTO.setNurseIds(Arrays.asList("nurse1", "nurse2"));
+
+        // Création de l'objet Doctor attendu après sauvegarde
+        Doctor savedDoctor = new Doctor();
+        savedDoctor.setId("doctor789");
+        savedDoctor.setName("Dr. Marie Curie");
+        savedDoctor.setPhoneNumber("0987654321");
+        savedDoctor.setHospital("Hôpital Sainte-Marie");
+        savedDoctor.setEmail("marie.curie@example.com");
+        savedDoctor.setPassword("securepassword");
+        savedDoctor.setPatientIds(Arrays.asList("patient1", "patient2"));
+        savedDoctor.setNurseIds(Arrays.asList("nurse1", "nurse2"));
+
+        // Configuration du mock pour renvoyer l'objet Doctor sauvegardé
+        when(doctorRepository.save(any(Doctor.class))).thenReturn(savedDoctor);
+
+        // Appel de la méthode à tester
+        Doctor result = medecinService.createDoctor(doctorRequestDTO);
+
+        // Vérifications
+        assertNotNull(result, "Le médecin créé ne doit pas être null");
+        assertEquals("doctor789", result.getId(), "L'ID du médecin doit correspondre");
+        assertEquals("Dr. Marie Curie", result.getName(), "Le nom du médecin doit correspondre");
+        assertEquals("0987654321", result.getPhoneNumber(), "Le numéro de téléphone doit correspondre");
+        assertEquals("Hôpital Sainte-Marie", result.getHospital(), "L'hôpital doit correspondre");
+        assertEquals("marie.curie@example.com", result.getEmail(), "L'email doit correspondre");
+        assertEquals("securepassword", result.getPassword(), "Le mot de passe doit correspondre");
+        assertEquals(2, result.getPatientIds().size(), "Le nombre de patients doit correspondre");
+        assertTrue(result.getPatientIds().contains("patient1") && result.getPatientIds().contains("patient2"),
+                "Les IDs des patients doivent correspondre");
+        assertEquals(2, result.getNurseIds().size(), "Le nombre d'infirmières doit correspondre");
+        assertTrue(result.getNurseIds().contains("nurse1") && result.getNurseIds().contains("nurse2"),
+                "Les IDs des infirmières doivent correspondre");
+
+        // Vérifier que la méthode save a été appelée une fois
+        verify(doctorRepository, times(1)).save(any(Doctor.class));
     }
 }
