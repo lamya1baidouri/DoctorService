@@ -20,7 +20,7 @@ public class Doctor {
     private String hospital;
     private String email;
     private String password;
-
+    private List<String> roles;
     private List<String> patientIds = new ArrayList<>();
 
 
@@ -106,4 +106,10 @@ public class Doctor {
         this.nurseIds = nurseIds;
     }
 
+    public List<String> getRoles() {
+        return roles;
+    }
+    public  void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }

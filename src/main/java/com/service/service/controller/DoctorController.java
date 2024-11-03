@@ -4,6 +4,8 @@ import com.service.service.Interfaces.DoctorService;
 import com.service.service.model.Doctor;
 import com.service.service.model.DoctorRequestDTO;
 import com.service.service.model.MessageRequestDTO;
+import com.service.service.model.DoctorAuthResponse;
+import com.service.service.model.DoctorUpdateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/doctors")
 @Tag(name = "Doctor Management", description = "Gestion des opérations liées aux médecins")
 public class DoctorController {
-
-
 
     @Autowired
     private DoctorService doctorService;
@@ -45,6 +45,39 @@ public class DoctorController {
         }
     }
 
+    /**
+     * Authentifier un médecin par email.
+     *
+     * @param email Email du médecin.
+     * @return ResponseEntity avec les détails du médecin et le statut HTTP approprié.
+     */
+    @Operation(summary = "Authenticate a doctor by email", description = "Permet d'authentifier un médecin en utilisant son email.")
+    @GetMapping("/getDoctorByemail")
+    public ResponseEntity<DoctorAuthResponse> getDoctorByEmail(
+            @Parameter(description = "Email du médecin", example = "doctor@example.com") @RequestParam String email) {
+        DoctorAuthResponse response = doctorService.findDoctorByEmail(email);
+        if (response == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Mettre à jour les informations d'un médecin.
+     *
+     * @param userId ID du médecin.
+     * @param doctorUpdateDTO Détails de la mise à jour.
+     * @return ResponseEntity avec le statut HTTP approprié.
+     */
+    @Operation(summary = "Update doctor information", description = "Permet de mettre à jour les détails d'un médecin.")
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<String> updateDoctor(
+            @Parameter(description = "ID du médecin", example = "123") @PathVariable Long userId,
+            @RequestBody DoctorUpdateDTO doctorUpdateDTO) {
+        doctorService.updateDoctor(userId, doctorUpdateDTO);
+        return ResponseEntity.ok("Médecin mis à jour avec succès");
+    }
 
     /**
      * Transférer un patient à un autre médecin.
