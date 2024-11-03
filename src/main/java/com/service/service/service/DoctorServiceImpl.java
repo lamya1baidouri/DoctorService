@@ -1,10 +1,7 @@
 package com.service.service.service;
 
 import com.service.service.Interfaces.DoctorService;
-import com.service.service.model.Doctor;
-import com.service.service.model.DoctorAuthResponse;
-import com.service.service.model.DoctorRequestDTO;
-import com.service.service.model.DoctorUpdateDTO;
+import com.service.service.model.*;
 import com.service.service.repository.DoctorRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +61,9 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setName(doctorRequestDTO.getUsername());
         doctor.setPatientIds(doctorRequestDTO.getPatientIds());
         doctor.setNurseIds(doctorRequestDTO.getNurseIds());
+        doctor.setEmail(doctorRequestDTO.getEmail());
+        doctor.setPassword(doctorRequestDTO.getPassword());
+        doctor.getRoles().add(Roles.ROLE_DOCTOR);
         return doctorRepository.save(doctor);
     }
 
@@ -73,7 +73,6 @@ public class DoctorServiceImpl implements DoctorService {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Médecin non trouvé"));
 
-        // Construire la réponse d'authentification du médecin
         return new DoctorAuthResponse(
                 doctor.getEmail(),
                 doctor.getPassword(),

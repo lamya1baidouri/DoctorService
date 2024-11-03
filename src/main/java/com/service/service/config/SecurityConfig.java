@@ -20,6 +20,7 @@ public class SecurityConfig {
                         // Autorise l'accès à toutes les ressources Swagger sans authentification
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/doctors/**").hasRole("DOCTOR") // Sécurise les API
+                        .requestMatchers("/api/doctors/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable()) // Désactive la protection CSRF si nécessaire
